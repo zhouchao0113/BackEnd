@@ -7,3 +7,4 @@
 > * 快速排序（随机单排，双排）
 > * 单例模式
 > * 非递归二叉树遍历
+> * [各类排序算法](https://www.cnblogs.com/onepixel/articles/7674659.html)
