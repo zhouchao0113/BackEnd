@@ -115,7 +115,7 @@ sendto、recvfrom保存对端的地址
   * 如果这个队列**没有已经完成的连接**，accept()函数就**会阻塞**，直到取出队列中已完成的用户连接为止。 
   * 如果，服务器不能及时调用 accept() 取走队列中已完成的连接，**队列满**掉后会怎样呢？UNP（《unix网络编程》）告诉我们，服务器的连接队列满掉后，**服务器不会对再对建立新连接的syn进行应答**，所以客户端的 connect 就会**返回 ETIMEDOUT**
 
-## [UDP中的connect](UDP中的connect方法 和TCP的connect方法详解)
+## [UDP中的connect](https://blog.csdn.net/woshiluoye9/article/details/63718231)
 
 UDP的connect和TCP的connect完全不同，UDP不会引起三次握手
 
