@@ -197,14 +197,14 @@ UDP的connect和TCP的connect完全不同，UDP不会引起三次握手
 
 ### 概念
 
-* 一个文件描述符关联一个文件，这里是网络套接字。
-* close会关闭用户应用程序中的socket句柄，释放相关资源，从而触发关闭TCP连接
-* 关闭TCP连接，是关闭网络套接字，断开连接
+* **优雅关闭**是指，如果发送缓存中还有数据未发出则其发出去，并且收到所有数据的ACK之后，发送FIN包，开始关闭过程。
+* **强制关闭**是指如果缓存中还有数据，则这些数据都将被丢弃，然后发送RST包，直接重置TCP连接。
 * close只是减少引用计数，只有当引用计数为0的时候，才发送fin，真正关闭连接
 * shutdown不同，只要以SHUT_WR/SHUT_RDWR方式调用即发送FIN包
-* shutdown后要调用close
+* shutdown后要调用close（shutdown函数用于关闭TCP连接，但并不关闭socket句柄）
 * 保持连接的某一端想关闭连接了，但它**需要确保要发送的数据全部发送完毕以后才断开连接**，此种情况下需要使用优雅关闭，一种是shutdown，一种是设置SO_LINGER的close
-* 半关闭，是关闭写端，但可以读对方的数据，这种只能通过shutdown实现
+* **半关闭**：当 TCP 链接中 A 发送 FIN 请求关闭， B 端回应 ACK 后（A 端进入 FIN_WAIT_2 状态）， B 没有立即发送 FIN 给 A时， A 方处在半链接状态，此时 A 可以接收 B 发送的数据，但是 A 已不能再向 B 发送数据。
+* 从程序的角度， 可以使用 API 来控制实现半连接状态。  
 
 ### close
 
@@ -222,12 +222,12 @@ struct linger{
 }
 ```
 
-* l_onoff为0，该选项不起作用，采用默认close行为
+* l_onoff为0，该选项不起作用，采用默认close行为。closesocket会立即返回，并关闭用户socket句柄。如果此时缓冲区中有未发送数据，则系统会在后台将这些数据发送完毕后关闭TCP连接，是一个**优雅关闭**过程。
 * l_onoff不为0
-  * l_linger为0，close立即返回，TCP模块丢弃被关闭的socket对应的TCP缓冲区中的数据，给对方发送RST复位信号，这样可以异常终止连接，且完全消除了TIME_WAIT状态
+  * l_linger为0，close立即返回，TCP模块丢弃被关闭的socket对应的TCP缓冲区中的数据，给对方发送RST复位信号，这样可以异常终止连接，且完全消除了TIME_WAIT状态。这是一个**强制关闭**过程。
   * l_linger不为0
-    * 阻塞socket，被关闭的socket对应TCP缓冲区，若还有数据，close会阻塞，进程睡眠，直到收到对方的确认或等待l_linger时间，若超时仍未收到确认，则close返回-1设置errno为EWOULDBLOCK
-    * 非阻塞socket，close立即返回，需要根据返回值和errno判断残留数据是够发送完毕
+    * 阻塞socket，此时如果缓冲区中有未发送数据，如果TCP在l_linger表明的时间内将所有数据发出，则发完后关闭TCP连接，这时是优雅关闭过程；如果如果TCP在l_linger表明的时间内没有将所有数据发出，则会丢弃所有未发数据然后TCP发送RST包重置连接，此时就是一个强制关闭过程了。
+    * 非阻塞socket，close立即返回，需要根据返回值和errno判断残留数据是够发送完毕。
 
 ### shutdown
 
