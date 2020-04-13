@@ -24,19 +24,18 @@ using namespace std;
 最差情况：数据元素本来就是逆序 O(n2)
 平均时间复杂度为O(n2)
 */
-vector<int> buble_sort(vector<int> &nums)
+void buble_sort(vector<int> &nums)
 {
 	for (int i = 0; i < nums.size(); i++)
 	{
 		for (int j = 0; j < nums.size() - 1 - i; j++)
 		{
-			if (nums[j] > nums[j+1]) //比较相邻的元素。如果第一个比第二个大，就交换它们两个
+			if (nums[j] > nums[j + 1]) //比较相邻的元素。如果第一个比第二个大，就交换它们两个
 			{
-				swap(nums[j], nums[j+1]);
+				swap(nums[j], nums[j + 1]);
 			}
 		}
 	}
-	return nums;
 }
 
 /*
@@ -52,7 +51,7 @@ vector<int> buble_sort(vector<int> &nums)
 平均时间复杂度为O(n2)
 */
 
-vector<int> insert_sort(vector<int> &nums)
+void insert_sort(vector<int> &nums)
 {
 	for (int i = 0; i < nums.size() - 1; i++)
 	{
@@ -63,20 +62,51 @@ vector<int> insert_sort(vector<int> &nums)
 			j--;
 		}
 	}
-	return nums;
 }
 
 
+/*
+快速排序使用分治法来把一个串（list）分为两个子串（sub-lists）。具体算法描述如下：
+
+1、从数列中挑出一个元素，称为 “基准”（pivot）；
+2、重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。
+3、在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
+4、递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
+最好情况：Partition函数每次恰好能均分序列O(n*logn)
+最差情况：每次划分只能将序列分为一个元素与其他元素两部分O(n2)
+平均情况：O(n*logn)
+*/
+void quick_sort(vector<int> &nums, int left, int right)
+{
+	if (left >= right) return;
+	int i = left; int j = right + 1;
+	int pivot = nums[left];
+	while (1)
+	{
+		while (i < right && nums[++i] < pivot) {} //从右往左，找到下一个大于pivot的数
+
+		while (j > left&& nums[--j] > pivot) {} //从左往右，找到下一个小于pivot的数
+
+		if (i >= j) break; //如果大数在小数的右边，则不用交换
+		swap(nums[i], nums[j]);
+	}
+	swap(nums[left], nums[j]);
+	if (left < right)
+	{
+		quick_sort(nums, left, j - 1);
+		quick_sort(nums, j + 1, right);
+	}
+}
 
 int main()
 {
-	vector<int> nums= { 5,4,2,3,1,6 };
+	vector<int> nums = { 0,4,3,4,9 };
 
-	vector<int> result = insert_sort(nums);
+	quick_sort(nums, 0, nums.size() - 1);
 
-	for (int i = 0; i < result.size(); i++)
+	for (int i = 0; i < nums.size(); i++)
 	{
-		cout << result[i] << ' ';
+		cout << nums[i] << ' ';
 	}
 	cout << endl;
 
