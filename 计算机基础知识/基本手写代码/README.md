@@ -267,6 +267,34 @@ void quick_sort(vector<int> &nums, int left, int right)
 	}
 }
 
+/*
+希尔排序先将整个待排序的记录序列分割成为若干子序列分别进行直接插入排序，具体算法描述：
+选择一个增量序列t1，t2，…，tk，其中ti>tj，tk=1；
+按增量序列个数k，对序列进行k 趟排序；
+每趟排序，根据对应的增量ti，将待排序列分割成若干长度为m 的子序列，分别对各子表进行直接插入排序。
+仅增量因子为1 时，整个序列作为一个表来处理，表长度即为整个序列的长度。
+*/
+
+void shell_Sort(vector<int> &nums)  //nums -- 待排序的数组
+{
+	int n = nums.size();
+	for (int gap = n / 2; gap > 0; gap /= 2) //进行分组，最开始的增量为开始的一半，每次减为原来的一半。
+	{
+		for (int i = 0; i < gap; i++) // 共gap个组，对每一组都执行直接插入排序
+		{
+			for (int j = i; j + gap < n; j += gap)
+			{
+				int k = j + gap;
+				while (k >gap&&nums[k]<nums[k -gap])
+				{
+					swap(nums[k], nums[k - gap]);
+					k -= gap;
+				}
+			}
+		}
+	}
+}
+
 int main()
 {
 	vector<int> nums = { 0,4,3,4,9 };
@@ -282,4 +310,3 @@ int main()
 	return 0;
 }
 ```
-
