@@ -1,11 +1,15 @@
 # 设计模式
 
+- 设计模式（Design pattern）代表了最佳的实践，通常被有经验的面向对象的软件开发人员所采用。设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。
+
+- 设计模式是一套被反复使用的、多数人知晓的、经过分类编目的、代码设计经验的总结。使用设计模式是为了重用代码、让代码更容易被他人理解、保证代码可靠性。 毫无疑问，设计模式于己于他人于系统都是多赢的，设计模式使代码编制真正工程化，设计模式是软件工程的基石，如同大厦的一块块砖石一样。项目中合理地运用设计模式可以完美地解决很多问题，每种模式在现实中都有相应的原理来与之对应，每种模式都描述了一个在我们周围不断重复发生的问题，以及该问题的核心解决方案，这也是设计模式能被广泛应用的原因。
+
 | 序号 | 模式 & 描述                                                  | 包括                                                         |
 | :--- | :----------------------------------------------------------- | :----------------------------------------------------------- |
-| 1    | **创建型模式** 这些设计模式提供了一种在创建对象的同时隐藏创建逻辑的方式，而不是使用 new 运算符直接实例化对象。这使得程序在判断针对某个给定实例需要创建哪些对象时更加灵活。 | 工厂模式（Factory Pattern）<br />抽象工厂模式（Abstract Factory Pattern）<br />单例模式（Singleton Pattern）<br />建造者模式（Builder Pattern）<br />原型模式（Prototype Pattern） |
-| 2    | **结构型模式** 这些设计模式关注类和对象的组合。继承的概念被用来组合接口和定义组合对象获得新功能的方式。 | 适配器模式（Adapter Pattern）<br />桥接模式（Bridge Pattern）<br />过滤器模式（Filter、Criteria Pattern）<br />组合模式（Composite Pattern）<br />装饰器模式（Decorator Pattern）<br />外观模式（Facade Pattern）<br />享元模式（Flyweight Pattern）<br />代理模式（Proxy Pattern） |
-| 3    | **行为型模式** 这些设计模式特别关注对象之间的通信。          | 责任链模式（Chain of Responsibility Pattern） <br />命令模式（Command Pattern）<br />解释器模式（Interpreter Pattern）<br />迭代器模式（Iterator Pattern）<br />中介者模式（Mediator Pattern）<br />备忘录模式（Memento Pattern）<br />观察者模式（Observer Pattern）<br />状态模式（State Pattern）<br />空对象模式（Null Object Pattern）<br />策略模式（Strategy Pattern）<br />模板模式（Template Pattern）<br />访问者模式（Visitor Pattern） |
-| 4    | **J2EE 模式** 这些设计模式特别关注表示层。这些模式是由 Sun Java Center 鉴定的。 | MVC 模式（MVC Pattern）<br />业务代表模式（Business Delegate Pattern）<br />组合实体模式（Composite Entity Pattern）<br />数据访问对象模式（Data Access Object Pattern）<br />前端控制器模式（Front Controller Pattern）<br />拦截过滤器模式（Intercepting Filter Pattern）<br />服务定位器模式（Service Locator Pattern）<br />传输对象模式（Transfer Object Pattern） |
+| 1    | **创建型模式** 这些设计模式提供了一种在创建对象<br />的同时隐藏创建逻辑的方式，而不是使用 new 运<br />算符直接实例化对象。这使得程序在判断针对某个<br />给定实例需要创建哪些对象时更加灵活。 | **工厂模式**（Factory Pattern）<br />抽象工厂模式（Abstract Factory Pattern）<br />**单例模式**（Singleton Pattern）<br />建造者模式（Builder Pattern）<br />原型模式（Prototype Pattern） |
+| 2    | **结构型模式** 这些设计模式关注类和对象的组合。<br />继承的概念被用来组合接口和定义组合对象获<br />得新功能的方式。 | 适配器模式（Adapter Pattern）<br />桥接模式（Bridge Pattern）<br />过滤器模式（Filter、Criteria Pattern）<br />组合模式（Composite Pattern）<br />装饰器模式（Decorator Pattern）<br />外观模式（Facade Pattern）<br />享元模式（Flyweight Pattern）<br />代理模式（Proxy Pattern） |
+| 3    | **行为型模式** 这些设计模式特别关注对象之间的通信。          | 责任链模式（Chain of Responsibility Pattern） <br />命令模式（Command Pattern）<br />解释器模式（Interpreter Pattern）<br />迭代器模式（Iterator Pattern）<br />中介者模式（Mediator Pattern）<br />备忘录模式（Memento Pattern）<br />**观察者模式**（Observer Pattern）<br />状态模式（State Pattern）<br />空对象模式（Null Object Pattern）<br />策略模式（Strategy Pattern）<br />模板模式（Template Pattern）<br />访问者模式（Visitor Pattern） |
+| 4    | **J2EE 模式** 这些设计模式特别关注表示层。<br />这些模式是由 Sun Java Center 鉴定的。 | MVC 模式（MVC Pattern）<br />业务代表模式（Business Delegate Pattern）<br />组合实体模式（Composite Entity Pattern）<br />数据访问对象模式（Data Access Object Pattern）<br />前端控制器模式（Front Controller Pattern）<br />拦截过滤器模式（Intercepting Filter Pattern）<br />服务定位器模式（Service Locator Pattern）<br />传输对象模式（Transfer Object Pattern） |
 
 ## 常见的设计模式
 
@@ -88,57 +92,91 @@ public class Singleton {
   }
   ```
 
-  
+## [工厂模式](https://www.cnblogs.com/heliusKing/p/11577837.html)
+
+- **意图：**定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，工厂模式使其创建过程延迟到子类进行。
+
+- **主要解决：**主要解决接口选择的问题。
+
+- **何时使用：**我们明确地计划不同条件下创建不同实例时。
+
+- **如何解决：**让其子类实现工厂接口，返回的也是一个抽象的产品。
+
+- **关键代码：**创建过程在其子类执行。
+
+## [抽象工厂模式](https://www.runoob.com/design-pattern/abstract-factory-pattern.html)
+
+抽象工厂模式（Abstract Factory Pattern）是围绕一个超级工厂创建其他工厂。该超级工厂又称为其他工厂的工厂。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。
+
+- **意图：**提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类。
+
+- **主要解决：**主要解决接口选择的问题。
+
+- **何时使用：**系统的产品有多于一个的产品族，而系统只消费其中某一族的产品。
+
+- **如何解决：**在一个产品族里面，定义多个产品。
+
+- **关键代码：**在一个工厂里聚合多个同类产品。
+
+- **优点：**当一个产品族中的多个对象被设计成一起工作时，它能保证客户端始终只使用同一个产品族中的对象。
+
+- **缺点：**产品族扩展非常困难，要增加一个系列的某一产品，既要在抽象的 Creator 里加代码，又要在具体的里面加代码。
+
+## [简单工厂模式、工厂模式和抽象工厂模式的区别及各自的优缺点](https://www.cnblogs.com/wikis/p/11738149.html)
+
+- **简单工厂模式**(又叫静态工厂模式)
+
+  本质是**通过传入不同的参数来实现多态，达到实例化不同对象的目的。**
+
+  【优点】
+
+  - 客户端创建对象时只需要记住特定的参数，而不需要记住复杂的类名，也不用关注实现的过程。(实现了封装和部分解耦)
+
+  - 创建对象不需要单独实例化，而是通过工厂类直接获取示例(实现复用)
+
+  【缺点】
+
+  - 实例化对象的逻辑全部封装在一个工厂类里，每次需求变化都要单独修改工厂类(违反了开放-封闭原则)，而且出了异常可能没法正常工作。
+
+  - 不方便扩展子类
+
+  【应用场景】
+
+  - 适合业务简单或者产品较少的情况
 
 
 
+- **工厂模式**(又称为创建模式)
 
+  是对简单工厂模式多了一层抽象，将实例化某一类对象具体细分给对应的工厂，而不是在一个工厂里通过依赖参数。
 
+  【优点】
 
+  - 在简单工厂的基础上遵循了开放-封闭原则，又进行了解耦，工厂类分为具体的工厂类
 
+  【缺点】
 
+  - 每增加一个工厂，就要额外开发一个工厂
 
+  【应用场景】
 
+  - 正文中符合工厂模式的情况，多由于解耦
 
+- **抽象工厂模式**
 
+  是对工厂模式又进行了一层抽象，不单单是像工厂模式只生成一类产品，而是一系列产品，并且可以像零件一样灵活配置给各工厂。
 
+  【优点】
 
+  - 正是由于复杂的抽象关联关系使得在类的内部对一系列产品组的管理很方便
 
+  【缺点】
 
+  - 扩展很费力，每次要修改很多类。
 
+  【应用场景】
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  - 待创建的对象是一系列相互关联或相互依赖的产品族时
 
 
 
