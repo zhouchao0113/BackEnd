@@ -399,6 +399,49 @@ select，poll，epoll都是IO多路复用的机制。I/O多路复用就通过一
     * 如果连接建立成功，这个错误值将是0
     * 如果建立连接时遇到错误，则这个值是连接错误所对应的errno值（比如：ECONNREFUSED,ETIMEDOUT等）。
 
+## epoll的实现知道么？在内核当中是什么样的数据结构进行存储，每个操作的时间复杂度是多少？
+
+```c++
+int epoll_create(int size);  
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);  
+int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout);  
+```
+
+1. 调用epoll_create建立一个epoll对象(在epoll文件系统中给这个句柄分配资源)；
+
+2. 调用epoll_ctl向epoll对象中添加这100万个连接的套接字；
+
+3. 调用epoll_wait收集发生事件的连接。
+
+我们在调用epoll_create时，内核除了帮我们在epoll文件系统里建了个file结点，在内核cache里建了个**红黑树**用于存储以后epoll_ctl传来的**socket**外，还会再建立一个rdllist**双向链表**，用于**存储准备就绪的事件**，当epoll_wait调用时，仅仅观察这个rdllist双向链表里有没有数据即可。有数据就返回，没有数据就sleep，等到timeout时间到后即使链表没数据也返回。所以，epoll_wait非常高效。
+
+当调用epoll_wait检查是否有发生事件的连接时，只是检查eventpoll对象中的rdllist双向链表是否有epitem元素而已，如果rdllist链表不为空，则这里的事件复制到用户态内存（使用共享内存提高效率）中，同时将事件数量返回给用户。因此epoll_waitx效率非常高。epoll_ctl在向epoll对象中添加、修改、删除事件时，从rbr红黑树中查找事件也非常快，也就是说epoll是非常高效的，它可以轻易地处理百万级别的并发连接。
+
+**总结**
+
+- 执行epoll_create()时，创建了红黑树和就绪链表；
+
+- 执行epoll_ctl()时，如果增加socket句柄，则检查在红黑树中是否存在，存在立即返回，不存在则添加到树干上，然后向内核注册回调函数，用于当中断事件来临时向准备就绪链表中插入数据；
+
+- 执行epoll_wait()时立刻返回准备就绪链表里的数据即可。
+
+## epoll的两种触发模式
+
+epoll有EPOLLLT和EPOLLET两种触发模式，LT是默认的模式，ET是“高速”模式。
+
+- LT（水平触发）模式下，只要这个文件描述符还有数据可读，每次 epoll_wait都会返回它的事件，提醒用户程序去操作；
+
+- ET（边缘触发）模式下，在它检测到有 I/O 事件时，通过 epoll_wait 调用会得到有事件通知的文件描述符，对于每一个被通知的文件描述符，如可读，则必须将该文件描述符一直读到空，让 errno 返回 EAGAIN 为止，否则下次的 epoll_wait 不会返回余下的数据，会丢掉事件。如果ET模式不是非阻塞的，那这个一直读或一直写势必会在最后一次阻塞。
+
+**epoll为什么要有EPOLLET触发模式？**
+
+  如果采用EPOLLLT模式的话，系统中一旦有大量你不需要读写的就绪文件描述符，它们每次调用epoll_wait都会返回，这样会**大大降低处理程序检索自己关心的就绪文件描述符的效率.**。而采用EPOLLET这种边缘触发模式的话，当被监控的文件描述符上有可读写事件发生时，epoll_wait()会通知处理程序去读写。如果这次没有把数据全部读写完(如读写缓冲区太小)，那么下次调用epoll_wait()时，它不会通知你，也就是它只会通知你一次，直到该文件描述符上**出现第二次可读写事件才会通知**你！！！这种模式比水平触发**效率高**，系统不会充斥大量你不关心的就绪文件描述符。
+
+**总结**：
+
+- ET模式（边缘触发）**只有数据到来才触发**，**不管缓存区中是否还有数据**，缓冲区剩余未读尽的数据不会导致epoll_wait返回；
+- LT 模式（水平触发，默认）**只要有数据都会触发**，缓冲区剩余未读尽的数据会导致epoll_wait返回。
+
 ## 为什么忽略SIGPIPE信号
 
 * 假设server和client 已经建立了连接，server调用了close, 发送FIN 段给client（其实不一定会发送FIN段，后面再说），此时server不能再通过socket发送和接收数据，此时client调用read，如果接收到FIN 段会返回0
@@ -411,4 +454,3 @@ select，poll，epoll都是IO多路复用的机制。I/O多路复用就通过一
 
 * 通过sigaction函数设置信号，将handler设置为SIG_IGN将其忽略
 * 通过send函数的MSG_NOSIGNAL来禁止写操作触发SIGPIPE信号
-
