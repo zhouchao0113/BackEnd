@@ -1,40 +1,62 @@
 /**************************************************************************
-**	¶ş·Ö²éÕÒ·¨
-**	ÔÚÓĞĞòÊı×éÖĞ²éÕÒtarget£¬²éÕÒµ½·µ»Øindex£¬·ñÔò·µ»Ø-1
+**	äºŒåˆ†æŸ¥æ‰¾æ³•
+**	åœ¨æœ‰åºæ•°ç»„ä¸­æŸ¥æ‰¾targetï¼ŒæŸ¥æ‰¾åˆ°è¿”å›indexï¼Œå¦åˆ™è¿”å›-1
 *************************************************************************/
 #include <iostream>
+#include <vector>
+
 using namespace std;
 
-int binarySearch(int arr[], int n, int target){
 
-	//ÔÚ[l,r]ÖĞ²éÕÒtarget
-	//°üº¬ÓÒ±ß½ç
-	int l = 0, r = n - 1;
-	int res;
-	while (l <= r){
-		//int mid = (l + r) / 2;
-		//·ÀÖ¹Òç³ö
-		int mid = l + (r - l) / 2;
-		if (arr[mid] == target){
-			res = mid;
-			break;
+//å¾ªç¯æ–¹æ³•
+int binary_search1(vector<int> &nums,int target)
+{
+	int left = 0;
+	int right = nums.size() - 1;
+
+	while (left <= right)
+	{
+		int mid = (right - left) / 2 + left;
+		if (nums[mid] > target)
+		{
+			right = mid-1;
 		}
-		//ÔÚ[l,mid-1]ÖĞ²éÕÒtarget
-		else if (arr[mid] > target)
-			r = mid - 1;
-		//ÔÚ[mid+1,r]ÖĞ²éÕÒtarget
+		else if (nums[mid] < target)
+		{
+			left = mid+1;
+		}
 		else
-			l = mid + 1;
+		{
+			return mid;
+		}
 	}
-	return res;
+	return -1;
 }
 
+//é€’å½’æ–¹æ³•
+int binary_search2(vector<int> &nums, int left, int right, int target)
+{
+	if (left > right) return -1;
+	 
+	int mid = (right - left) / 2 + left;
 
-int main(){
+	if (nums[mid] == target)
+	{
+		return mid;
+	}
+	else if (nums[mid] > target)
+	{
+		return binary_search2(nums, left, mid-1, target);
+	}
+	else
+	{
+		return binary_search2(nums, mid+1, right, target);
+	}
+}
 
-	int a[6] = { 0, 1, 2, 3, 4, 5 };
-	int res = binarySearch(a, 6, 4);
-	cout << res << endl;
-	system("pause");
+int main()
+{
+	vector<int> nums = { 1,2,3,4,5,6,7 };
+	cout << binary_search2(nums, 0, nums.size(), 1) << endl;
 	return 0;
 }
