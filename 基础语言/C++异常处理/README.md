@@ -278,3 +278,11 @@ sort(vec.begin(), vec.end(), [](int a, int b)->bool{return a < b})
 * 定义
   * 仿函数(functor)又称之为函数对象（function object），其实就是重载了operator()操作符的struct或class，是一个能行使函数功能的类
   * 它使一个类的使用看上去像一个函数，这个类就有了类似函数的行为，就是一个仿函数类。 
+
+## [lambda表达式](https://www.cnblogs.com/jimodetiantang/p/9016826.html)
+
+lambda表达式的作用：
+
+1. **省下定义函数的过程**。
+2. 对于一些比较抽象并且整个程序执行下来只需要调用一两次的函数，使用lambda就**不需要考虑命名问题**。
+3. **简化代码的可读性**，由于普通的函数阅读经常要跳到开头def定义部分，使用lambda函数可以省去这样的步骤。
